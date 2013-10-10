@@ -5,48 +5,19 @@ using UnityEngine;
 /// Provide a Somewhat More Reasonable Thrust vectoring algorithm than the stock KSP ModuleGimbal.
 /// To use, in a part.cfg, replace "ModuleGimbal" with "ModuleSMRTGimbal".
 /// </summary>
-public class ModuleSMRTGimbal : PartModule
+public class ModuleSMRTGimbal : ModuleGimbal
 {
-    [KSPField]
-    public string gimbalTransformName = "thrustTransform";
     private Transform m_gimbalTransform;
     private Quaternion m_restRotation;
-    [KSPField]
-    public float gimbalRange = 1;
-    // in degrees
-
-    [KSPField(guiActive = true, guiName = "Gimbal Locked")]
-    private bool gimbalIsLocked = false;
-
-    [KSPAction("Toggle Gimbal")]
-    public void ToggleGimbalAction() {
-        ToggleGimbal();
-    }
-
-    [KSPEvent(guiName = "Toggle Gimbal")]
-    public void ToggleGimbal() {
-        gimbalIsLocked = !gimbalIsLocked;
-    }
 
     [KSPAction("Free Gimbal")]
     public void FreeGimbalAction() {
         FreeGimbal();
     }
 
-    [KSPEvent(guiName = "Free Gimbal", guiActive = true)]
-    public void FreeGimbal() {
-        gimbalIsLocked = false;
-    }
-
-
     [KSPAction("Lock Gimbal")]
     public void LockGimbalAction() {
         LockGimbal();
-    }
-
-    [KSPEvent(guiName = "Lock Gimbal", guiActive = true)]
-    public void LockGimbal() {
-        gimbalIsLocked = true;
     }
 
     public override void OnStart (StartState state)
@@ -56,21 +27,9 @@ public class ModuleSMRTGimbal : PartModule
         m_restRotation = m_gimbalTransform.localRotation;
     }
 
-    public override void OnActive ()
-    {
-        base.OnActive();
-    }
-
-    public override void OnInactive ()
-    {
-        base.OnInactive();
-    }
-
     public override void OnFixedUpdate ()
     {
-        base.OnFixedUpdate();
-
-        if (gimbalIsLocked)
+        if (gimbalLock)
             return;
 
         var s = vessel.ctrlState;
